@@ -22,7 +22,7 @@ class Config:
     
     # Data Source Configuration
     COVID_DATA_URL = os.getenv('COVID_DATA_URL', 
-                              'https://covid.ourworldindata.org/data/owid-covid-data.csv')
+                              'https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv')
     
     # Target Countries
     TARGET_COUNTRIES = os.getenv('TARGET_COUNTRIES', 'Nepal,India,United States').split(',')
