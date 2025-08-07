@@ -1,0 +1,73 @@
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:13
+    container_name: covid_postgres
+    environment:
+      POSTGRES_DB: covid_data
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # COVID-19 ETL Application
+  covid-etl:
+    build: .
+    container_name: covid_etl_app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=covid_data
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres123
+      - COVID_DATA_URL=https://covid.ourworldindata.org/data/owid-covid-data.csv
+      - TARGET_COUNTRIES=Nepal,India,United States
+      - SPARK_MASTER=local[*]
+      - SPARK_DRIVER_MEMORY=2g
+      - SPARK_EXECUTOR_MEMORY=2g
+      - RAW_DATA_DIR=data/raw
+      - PROCESSED_DATA_DIR=data/processed
+      - LOG_DIR=logs
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    command: >
+      sh -c "
+        echo 'Waiting for database to be ready...' &&
+        python scripts/setup_database.py &&
+        echo 'Downloading COVID-19 data...' &&
+        python scripts/download_data.py &&
+        echo 'Running ETL pipeline...' &&
+        python src/etl_pipeline.py
+      "
+
+  # Optional: pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: covid_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@covid.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  postgres_data:
+  pgadmin_data: 
