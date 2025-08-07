@@ -120,7 +120,7 @@ class DatabaseManager:
                 
                 # Get sample data
                 sample_result = conn.execute(text(f"SELECT * FROM {table_name} LIMIT 5"))
-                sample_data = [dict(row) for row in sample_result]
+                sample_data = [dict(row._mapping) for row in sample_result]
                 
                 return {
                     'table_name': table_name,
