@@ -7,7 +7,7 @@ A complete data engineering pipeline that extracts COVID-19 data from Our World 
 This project demonstrates a typical ETL (Extract, Transform, Load) pipeline for COVID-19 data analysis:
 
 - **Extract**: Downloads COVID-19 data from Our World in Data (OWID) public dataset
-- **Transform**: Uses PySpark to clean, filter, and calculate rolling averages
+- **Transform**: Uses Pandas to clean, filter, and calculate rolling averages
 - **Load**: Stores processed data in PostgreSQL database
 
 ## Data Source
@@ -156,11 +156,6 @@ CREATE TABLE covid_data (
 
 ## Troubleshooting
 
-### Common Issues
-
-1. **Java not found**: Ensure Java 8+ is installed and JAVA_HOME is set
-2. **PostgreSQL connection failed**: Check database credentials in `.env`
-3. **Memory issues**: Adjust Spark configuration in `src/config.py`
 
 ### Debug Mode
 
@@ -168,18 +163,6 @@ Run with debug logging:
 ```bash
 python src/etl_pipeline.py --debug
 ```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License.
 
 ## Acknowledgments
 
